@@ -143,7 +143,12 @@ IF OBJECT_ID ('silver.erp_PX_CAT_G1V2','U') is not null
 	Drop Table silver.erp_PX_CAT_G1V2;
 Create Table silver.erp_PX_CAT_G1V2 (
 	ID Nvarchar(50),
-	CAT Nvarchar(50),
+	CAT Nvarchar(50)
+	Subcat Nvarchar(50),
+	Maintenance Nvarchar(50),
+	dwh_create_date datetime2 default getdate()
+);
+
 
 
 	--Quality checks
@@ -168,9 +173,3 @@ select  distinct prd_line from silver.crm_prd_info
 select * from bronze.crm_prd_info where pre_end_dt <prd_start_dt
 select * from silver.crm_prd_info where pre_end_dt <prd_start_dt
 
-select * from silver.crm_prd_info
-
-	Subcat Nvarchar(50),
-	Maintenance Nvarchar(50),
-	dwh_create_date datetime2 default getdate()
-);
