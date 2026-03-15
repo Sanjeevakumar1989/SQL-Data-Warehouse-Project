@@ -263,3 +263,47 @@ sls_sales is Null or sls_quantity is Null or sls_price is Null or
 sls_sales<=0 or sls_quantity <=0 or sls_price <=0 order by sls_sales,sls_quantity,sls_price
 
 select * from silver.crm_sales_details
+
+Print'--------------------------'
+print'  Bronze Erp_cust_AZ12     '
+print'---------------------------'
+
+
+insert into silver.erp_Cust_AZ12
+(Cid,
+Bdate,
+gen)
+select 
+Case when CID like 'NAS%' then Substring(CID,4,Len(CID))
+    Else CID
+End as CID,
+case when Bdate >Getdate() then Null
+    else Bdate
+End Bdate,
+case when Upper(trim(gen)) in ('F','Female') then 'Female'
+	WHEN UPPER(TRIM(GEN)) IN ('M','Male') then 'Male'
+	Else 'N/A'
+end Gen
+from bronze.erp_Cust_AZ12
+
+
+
+
+--where   Bdate < '1924-01-01' or Bdate>Getdate()
+--Data standardization and consistancy
+select distinct GEN,
+case when Upper(trim(gen)) in ('F','Female') then 'Female'
+	when upper(trim(gen)) in ('M','Male') then 'Male'
+	else 'N/A'
+end gen
+from bronze.erp_Cust_AZ12
+--where case when CID Like 'NAS%' then substring(CID,4,len(CID)) else CID END not in (select distinct cst_key from silver.crm_cust_info)
+
+--Quality check
+select distinct Bdate from bronze.erp_Cust_AZ12 where Bdate<'1924-01-01' or Bdate>Getdate()
+select Distinct gen from bronze.erp_Cust_AZ12
+select * from bronze.erp_Cust_AZ12
+
+select distinct Bdate from silver.erp_Cust_AZ12 where Bdate<'1924-01-01' or Bdate>Getdate()
+select Distinct gen from silver.erp_Cust_AZ12
+select * from silver.erp_Cust_AZ12
