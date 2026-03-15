@@ -174,3 +174,92 @@ select * from bronze.crm_prd_info where pre_end_dt <prd_start_dt
 select * from silver.crm_prd_info where pre_end_dt <prd_start_dt
 
 select * from silver.crm_prd_info
+
+print'--------------------------------------';
+print'    Bronze.crm_sales_details         ';
+print'--------------------------------------'
+
+select * from bronze.crm_sales_details
+Insert into silver.crm_sales_details(
+sls_ord_num,
+sls_prd_key,
+sls_cust_id,
+sls_order_dt,
+sls_ship_dt,
+sls_due_dt,
+sls_sales,
+sls_Quantity,
+sls_price
+)
+
+
+select
+sls_ord_num,
+sls_prd_key,
+sls_cust_id,
+Case  when sls_order_dt <= 0  or len(sls_order_dt) != 8 then Null
+	Else Cast(Cast(sls_order_dt as Varchar) as Date)
+End sls_order_dt,	
+Case when sls_ship_dt = 0 or len(sls_ship_dt) !=8 then Null
+	 Else cast(cast(sls_ship_dt as varchar )as Date) 
+End sls_ship_dt,
+Case when sls_due_dt <=0 or len(sls_due_dt) != 8 Then Null
+	Else Cast(Cast(sls_due_dt as Varchar) as Date)
+End sls_due_dt,
+case when sls_sales is null or sls_sales<=0 or sls_sales != sls_quantity * ABS(sls_price)
+	then sls_quantity * ABS(sls_price)
+	else sls_sales
+End sls_sales,
+sls_Quantity,
+case when sls_price is null or sls_price <=0 then sls_sales/Nullif(sls_quantity,0)
+	else sls_price
+End sls_price
+from bronze.crm_sales_details
+--where sls_ord_num != trim(sls_ord_num)
+--where sls_prd_key not in (select prd_key from silver.crm_prd_info)
+--where sls_cust_id not in (select cst_id from silver.crm_cust_info)
+--check for invalid dates
+--select sls_order_dt from bronze.crm_sales_details where sls_order_dt<=0
+--select Nullif(sls_order_dt,0) as sls_order_dt from bronze.crm_sales_details where sls_order_dt <=0
+--select distinct sls_order_dt from bronze.crm_sales_details
+--select len(sls_order_dt) from bronze.crm_sales_details
+--where len(sls_order_dt) !=8 or sls_order_dt<=0 or sls_order_dt >20500101
+--where sls_order_dt >20500101
+
+select distinct sls_order_dt from bronze.crm_sales_details
+select  sls_ship_dt from bronze.crm_sales_details  where sls_ship_dt <=0 
+or sls_ship_dt !=8 
+or sls_ship_dt is null
+or sls_ship_dt >20500101
+or sls_ship_dt <19000101
+
+select  Nullif(sls_due_dt,0) sls_due_dt  from bronze.crm_sales_details  where sls_due_dt <=0 
+or len(sls_due_dt) !=8 
+or sls_due_dt is null
+or sls_due_dt >20500101
+or sls_due_dt <19000101
+
+--Check data consistancy :Between sales,Quantity and price
+-->Sales=Quantity * price
+--> Values must not be zero,nulls or Negative
+
+select * from bronze.crm_sales_details
+
+select  Distinct sls_sales as old_sls_sales,
+sls_quantity,
+sls_price as old_sls_price,
+
+case when sls_sales is null or sls_sales <=0 or sls_sales != sls_quantity * ABS(sls_price)
+	then sls_quantity * ABS(sls_price)
+	else sls_sales
+End sls_sales,
+
+Case when sls_price is null or sls_price <=0 then sls_sales/ Nullif(sls_quantity,0)
+else sls_price
+End sls_price
+from bronze.crm_sales_details 
+where sls_sales != sls_quantity * sls_price or
+sls_sales is Null or sls_quantity is Null or sls_price is Null or
+sls_sales<=0 or sls_quantity <=0 or sls_price <=0 order by sls_sales,sls_quantity,sls_price
+
+select * from silver.crm_sales_details
