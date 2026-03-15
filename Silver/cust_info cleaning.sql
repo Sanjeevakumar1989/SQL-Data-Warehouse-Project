@@ -144,6 +144,32 @@ IF OBJECT_ID ('silver.erp_PX_CAT_G1V2','U') is not null
 Create Table silver.erp_PX_CAT_G1V2 (
 	ID Nvarchar(50),
 	CAT Nvarchar(50),
+
+
+	--Quality checks
+--check for Nulls and duplicates in primary key
+--Expectation :No result
+select prd_id,count(*) from silver.crm_prd_info group by prd_id having count(*)>1 or prd_id is null
+
+--check for unwanted spaces
+--Expectation :No results
+select  prd_nm from silver.crm_prd_info where prd_nm != trim(prd_nm)
+
+--check for Nulls or Negative numbers
+--Expection :No Results
+select * from bronze.crm_prd_info where prd_cost<0  or prd_cost is null
+select * from silver.crm_prd_info where prd_cost<0  or prd_cost is null
+
+--data standardization & consists
+select  distinct prd_line from bronze.crm_prd_info
+select  distinct prd_line from silver.crm_prd_info
+
+--check for invalid date orders
+select * from bronze.crm_prd_info where pre_end_dt <prd_start_dt
+select * from silver.crm_prd_info where pre_end_dt <prd_start_dt
+
+select * from silver.crm_prd_info
+
 	Subcat Nvarchar(50),
 	Maintenance Nvarchar(50),
 	dwh_create_date datetime2 default getdate()
