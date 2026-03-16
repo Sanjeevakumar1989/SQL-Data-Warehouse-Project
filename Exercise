@@ -307,3 +307,27 @@ select * from bronze.erp_Cust_AZ12
 select distinct Bdate from silver.erp_Cust_AZ12 where Bdate<'1924-01-01' or Bdate>Getdate()
 select Distinct gen from silver.erp_Cust_AZ12
 select * from silver.erp_Cust_AZ12
+
+----------------
+
+-----------------
+insert into silver.erp_LOC_A101(
+CID,
+Cntry)
+
+select * from bronze.erp_LOC_A101
+select 
+Replace (CID,'-','') as CID,
+Case when Trim(Cntry) ='DE' then 'Germany'
+	when Trim(cntry) in ('US','USA') then 'United States'
+	when Trim(cntry) ='' or Cntry is null then 'N/A'
+	Else cntry
+End Cntry
+from bronze.erp_LOC_A101
+
+--from bronze.erp_LOC_A101 where CID NOT IN (select cst_key from silver.crm_cust_info)
+
+--select Distinct Cntry from bronze.erp_LOC_A101
+select Distinct Cntry from silver.erp_LOC_A101 order by cntry 
+
+select *  from silver.erp_LOC_A101
