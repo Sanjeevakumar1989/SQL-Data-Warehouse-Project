@@ -331,3 +331,33 @@ from bronze.erp_LOC_A101
 select Distinct Cntry from silver.erp_LOC_A101 order by cntry 
 
 select *  from silver.erp_LOC_A101
+
+
+print'--------------------------------------'
+print'     Bronze.erp_PX_CAT_G1V2     '
+print'--------------------------------------'
+select * from bronze.erp_PX_CAT_G1V2
+
+insert into silver.erp_PX_CAT_G1V2(
+ID,
+Cat,
+subcat,
+Maintenance
+)
+
+select ID,
+cat,
+subcat,
+Maintenance
+from bronze.erp_PX_CAT_G1V2 
+
+select * from silver.erp_PX_CAT_G1V2
+
+--check for unwanted spaces
+select * from bronze.erp_PX_CAT_G1V2 where ID !=Trim(ID)
+select * from bronze.erp_PX_CAT_G1V2 where cat != trim(cat) or Maintenance != trim(maintenance) or subcat !=trim(subcat)
+
+--data standardization & consistency
+select distinct cat from bronze.erp_PX_CAT_G1V2
+select distinct subcat from bronze.erp_PX_CAT_G1V2
+select distinct Maintenance from bronze.erp_PX_CAT_G1V2
