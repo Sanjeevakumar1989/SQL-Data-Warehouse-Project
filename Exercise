@@ -1,3 +1,21 @@
+/*
+---------------------------------------------
+Quality checks
+--------------------------------------------
+Script Purpose:
+ This performs Quality checks and validate the integrity ,consistancy,
+and accuracy of the gold layer.These checks Ensure:
+	-Uniqueness of surrogate keys in Dimension Tables.
+	- Referential Integrity between fact and dimension tables,
+	- validation on relationships in the data model for anlytical purpose.
+
+Usage notes:
+	-Run these checks after data loading silver layer.
+	- investigate and resolve any discrepansis found during checks.
+---------------------------------------------
+*/
+
+
 Insert into silver.crm_cust_info (
 cst_id,
 cst_key,
